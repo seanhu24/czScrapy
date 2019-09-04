@@ -37,7 +37,7 @@ class AppYuhangTbSpider(scrapy.Spider) :
            #item["noticeTitle"] = self.new_item["noticeTitle"]
            self.newday = item["noticePubDate"]
            item["source"] = "杭州余杭政府门户网站"
-           item["title"] = str(node.xpath("./td[2]/a[2]/text()").extract()[0].encode(self.newEndcode), 'utf-8')
+           item["title"] = str(node.xpath("./td[2]/a[2]/@title").extract()[0].encode(self.newEndcode), 'utf-8')
            #print(node.xpath("./td[2]/a[2]/text()").extract()[0].encode(self.newEndcode).decode('utf-8'))
            item["typeName"] = "招标公告"
            item["url"] = url
@@ -45,7 +45,7 @@ class AppYuhangTbSpider(scrapy.Spider) :
                logging.info("发送email-------")
                send_email(receiver=['huxiao_hz@citicbank.com', '16396355@qq.com', '8206741@163.com'],
                #send_email(receiver=['8206741@163.com'],
-                          title=self.curr_time+'杭州余杭政府门户网站'+str(uuid.uuid1()), cont='<h1>今日爬取地址{}\r\n<br>杭州余杭政府门户网站最新更新日期是{}</h1>'.format(response.url+"\r\n", self.newday))
+                          title=self.curr_time+'杭州余杭招标网站', cont='<h1>今日爬取地址{}\r\n<br>杭州余杭招标网站最新更新日期是{}</h1>'.format(response.url+"\r\n", self.newday))
            nowItem+=1
            yield item
 

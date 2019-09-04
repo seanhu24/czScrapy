@@ -31,17 +31,22 @@ def send_email(receiver=None, title=None, cont=None):
         # 注意！如果是使用SSL端口，这里就要改为SMTP_SSL
         s.login(sender, pwd)
         # 登陆邮箱
-        for r in receiver:
-            msg['to'] = r
-            s.sendmail(sender, r, msg.as_string())
+        #for r in receiver:
+            #msg['to'] = r
+            #s.sendmail(sender, r, msg.as_string())
             # 发送邮件！
-            print('Done.sent email to {} success'.format(r))
-            logging.info('Done.sent email to {} success'.format(r))
-    except smtplib.SMTPException:
-        print('Error.sent email fail')
-        logging.error('Error.sent email fail')
+           # print('Done.sent email to {} success'.format(r))
+           # logging.info('Done.sent email to {} success'.format(r))
+        msg['to'] = ";".join(receiver)
+        print(msg['to'])
+        s.sendmail(sender, msg['to'], msg.as_string())
+        print('Done.sent email to {} success'.format(msg['to']))
+        logging.info('Done.sent email to {} success'.format(msg['to']))
+    except smtplib.SMTPException as e:
+        print('Error.sent email fail'+str(e))
+        logging.error('Error.sent email fail'+str(e))
 
 
 if __name__ == '__main__':
-    send_email(receiver=['8206741@163.com'],
-               title='杭州余杭政府门户网站', cont='<h1>今日杭州余杭政府门户网站最新更新日期是{}</h1>'.format(111))
+    send_email(receiver=['493093559@qq.com'],
+               title='20190904 10:03新网站', cont='今天天气不错啊!!!!{}'.format(str('20190904')))
