@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import random
 # Scrapy settings for scrapySpider project
 #
 # For simplicity, this file contains only settings considered important or
@@ -14,9 +14,47 @@ BOT_NAME = 'czScrapy'
 SPIDER_MODULES = ['czScrapy.spiders']
 NEWSPIDER_MODULE = 'czScrapy.spiders'
 
+user_agent_list = [
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 "
+        "(KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
+        "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 "
+        "(KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 "
+        "(KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6",
+        "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 "
+        "(KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6",
+        "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.1 "
+        "(KHTML, like Gecko) Chrome/19.77.34.5 Safari/537.1",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.5 "
+        "(KHTML, like Gecko) Chrome/19.0.1084.9 Safari/536.5",
+        "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/536.5 "
+        "(KHTML, like Gecko) Chrome/19.0.1084.36 Safari/536.5",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 "
+        "(KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
+        "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.3 "
+        "(KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 "
+        "(KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
+        "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 "
+        "(KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 "
+        "(KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",
+        "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 "
+        "(KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 "
+        "(KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
+        "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/536.3 "
+        "(KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
+        "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 "
+        "(KHTML, like Gecko) Chrome/19.0.1061.0 Safari/536.3",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.24 "
+        "(KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24",
+        "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 "
+        "(KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
+]
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+USER_AGENT =  random.choice(user_agent_list)
 
 # Obey robots.txt rules
 #ROBOTSTXT_OBEY = True
@@ -52,9 +90,9 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'scrapySpider.middlewares.ScrapyspiderDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    'czScrapy.czScrapyMiddlewares.czScrapyMiddlewares': 543,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -93,3 +131,24 @@ FEED_EXPORT_ENCODING= 'utf-8'
 
 LOG_FILE = "czScrapy.log"
 LOG_LEVEL = "INFO"
+
+#遵守robots协议
+#ROBOTSTXT_OBEY = False
+#并发请求个数（越小越慢）
+CONCURRENT_REQUESTS = 16
+#对单个网站进行并发请求的最大值
+CONCURRENT_REQUESTS_PER_DOMAIN= 8
+#下载延迟时间（越大请求越慢）
+DOWNLOAD_DELAY = 5
+#默认False;为True表示启用AUTOTHROTTLE扩展
+AUTOTHROTTLE_ENABLED = True
+#默认3秒;初始下载延迟时间
+AUTOTHROTTLE_START_DELAY = 1
+#默认60秒；在高延迟情况下最大的下载延迟
+AUTOTHROTTLE_MAX_DELAY = 3
+#使用httpscatch缓存
+HTTPCACHE_ENABLED = True
+HTTPCACHE_EXPIRATION_SECS = 1
+HTTPCACHE_DIR = 'httpcache'
+HTTPCACHE_IGNORE_HTTP_CODES = []
+HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'

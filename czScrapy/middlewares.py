@@ -7,7 +7,6 @@
 
 from scrapy import signals
 
-
 class CzscrapySpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
@@ -81,13 +80,7 @@ class CzscrapyDownloaderMiddleware(object):
         return None
 
     def process_response(self, request, response, spider):
-        # Called with the response returned from the downloader.
-
-        # Must either;
-        # - return a Response object
-        # - return a Request object
-        # - or raise IgnoreRequest
-        return response
+       return response
 
     def process_exception(self, request, exception, spider):
         # Called when a download handler or a process_request()
