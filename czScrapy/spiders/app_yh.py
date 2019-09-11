@@ -26,8 +26,8 @@ class AppYhSpider(scrapy.Spider):
     totlepage =1
     nowpage = 1
     newEndcode = "utf-8"
-    local_path =os.path.abspath('chromedriver.exe')
-    #print(local_path)
+    local_path =os.path.abspath('chromedriver')
+    print(local_path)
     # 实例化一个浏览器对象
     def __init__(self):
         self.browser = webdriver.Chrome(chrome_options=chorme_options, executable_path=self.local_path)
