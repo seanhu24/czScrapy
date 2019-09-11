@@ -7,6 +7,7 @@ from czScrapy.mail_utils import *
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import os
+import time
 #无头浏览器设置
 chorme_options = Options()
 chorme_options.add_argument("--headless")
@@ -23,10 +24,13 @@ class AppYhSpider(scrapy.Spider):
     start_urls = ['http://www.yuhang.gov.cn/col/col1532234/index.html?uid=4793621&pageNum=1','http://www.yuhang.gov.cn/col/col1532235/index.html?uid=4793621&pageNum=1']
     base_url ='http://www.yuhang.gov.cn'
     logging.info("开始爬取杭州市余杭区人民政府----")
-    totlepage =1
-    nowpage = 1
+    totlepage_1532234 =1
+    nowpage_1532234 = 1
+    totlepage_1532235 = 1
+    nowpage_1532235 = 1
     newEndcode = "utf-8"
     local_path =os.path.abspath('chromedriver')
+    curr_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     print(local_path)
     # 实例化一个浏览器对象
     def __init__(self):
@@ -42,7 +46,13 @@ class AppYhSpider(scrapy.Spider):
     def parse(self, response):
         #print(response.text)
         node_list = response.xpath("//div[@id='4793621']/div/li")
-        self.totlepage = int(response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
+        if (self.nowpage_1532234 == 1) & ('1532234' in response.url):
+            self.totlepage_1532234 = int(
+                response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
+        if (self.nowpage_1532235 == 1) & ('1532235' in response.url):
+            self.totlepage_1532235 = int(
+                response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
+        #self.totlepage = int(response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
         newbase_url = response.url
         nowItem = 0
         for node in node_list:
@@ -53,7 +63,7 @@ class AppYhSpider(scrapy.Spider):
             #print(href)
 
             url = self.base_url + href.replace("'" , "")
-            print(url)
+            #print(url)
             yield scrapy.Request(url, meta={'item': item}, callback=self.newparse)
             item["noticePubDate"] = str(node.xpath("./a/i/text()").extract()[0].encode(self.newEndcode), 'utf-8').replace('[', '').replace(']', '')
             # item["noticeTitle"] = self.new_item["noticeTitle"]
@@ -66,7 +76,7 @@ class AppYhSpider(scrapy.Spider):
             else :
                 item["typeName"] = "中标公示"
             item["url"] = url
-            if self.nowpage == 0 and nowItem == 0:
+            if (self.nowpage_1532234 == 1 | self.nowpage_1532235 == 1) and nowItem == 0:
                 logging.info("发送email-------")
                 send_email(receiver=['huxiao_hz@citicbank.com', '16396355@qq.com', '8206741@163.com'],
                            # send_email(receiver=['8206741@163.com'],
@@ -75,10 +85,16 @@ class AppYhSpider(scrapy.Spider):
             nowItem += 1
             yield item
 
-        if self.nowpage < self.totlepage:
-            logging.info("现在爬取第{}页内容".format(self.nowpage + 1))
-            self.nowpage += 1
-            newurl = newbase_url[:newbase_url.index('&')+1] + 'pageNum=' + str(self.nowpage)
+        if (self.nowpage_1532234 < self.totlepage_1532234) & ('1532234' in newbase_url):
+            logging.info("招标公示现在爬取第{}页内容".format(self.nowpage_1532234 +1))
+            self.nowpage_1532234 += 1
+            newurl = newbase_url[:newbase_url.index('&')+1] + 'pageNum=' + str(self.nowpage_1532234)
+            #print(newurl)
+            yield scrapy.Request(newurl, callback=self.parse)
+        if (self.nowpage_1532235 < self.totlepage_1532235) & ('1532235' in newbase_url):
+            logging.info("中标公示现在爬取第{}页内容".format(self.nowpage_1532235 +1))
+            self.nowpage_1532235 += 1
+            newurl = newbase_url[:newbase_url.index('&')+1] + 'pageNum=' + str(self.nowpage_1532235)
             #print(newurl)
             yield scrapy.Request(newurl, callback=self.parse)
 

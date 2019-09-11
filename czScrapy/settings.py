@@ -133,7 +133,7 @@ LOG_FILE = "czScrapy.log"
 LOG_LEVEL = "INFO"
 
 #遵守robots协议
-#ROBOTSTXT_OBEY = False
+ROBOTSTXT_OBEY = False
 #并发请求个数（越小越慢）
 CONCURRENT_REQUESTS = 16
 #对单个网站进行并发请求的最大值

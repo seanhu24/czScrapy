@@ -7,6 +7,7 @@ from czScrapy.mail_utils import *
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import os
+import time
 #无头浏览器设置
 chorme_options = Options()
 chorme_options.add_argument("--headless")
@@ -24,10 +25,13 @@ class AppYcSpider(scrapy.Spider):
     start_urls = ['http://www.sxyc.gov.cn/col/col1559789/index.html?uid=4851098&pageNum=1','http://www.sxyc.gov.cn/col/col1559790/index.html?uid=4851098&pageNum=1']
     base_url ='http://www.sxyc.gov.cn'
     logging.info("开始爬取绍兴市越城区人民政府（高新区、袍江开发区管委会）----")
-    totlepage =1
-    nowpage = 1
+    totlepage_89 =1
+    nowpage_89 = 1
+    totlepage_90 = 1
+    nowpage_90 = 1
     newEndcode = "utf-8"
     local_path =os.path.abspath('chromedriver')
+    curr_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     #print(local_path)
     # 实例化一个浏览器对象
     def __init__(self):
@@ -43,7 +47,13 @@ class AppYcSpider(scrapy.Spider):
     def parse(self, response):
         #print(response.text)
         node_list = response.xpath("//div[@id='4851098']/div/li")
-        self.totlepage = int(response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
+        if (self.nowpage_89 == 1) & ('1559789' in response.url):
+            self.totlepage_89 = int(
+                response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
+        if (self.nowpage_90 == 1) & ('1559790' in response.url):
+            self.totlepage_90 = int(
+                response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
+        #self.totlepage = int(response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
         newbase_url = response.url
         nowItem = 0
         for node in node_list:
@@ -67,7 +77,7 @@ class AppYcSpider(scrapy.Spider):
             else :
                 item["typeName"] = "中标公示"
             item["url"] = url
-            if self.nowpage == 0 and nowItem == 0:
+            if (self.nowpage_89 == 1 | self.nowpage_90 == 1) and nowItem == 0:
                 logging.info("发送email-------")
                 send_email(receiver=['huxiao_hz@citicbank.com', '16396355@qq.com', '8206741@163.com'],
                            # send_email(receiver=['8206741@163.com'],
@@ -76,13 +86,18 @@ class AppYcSpider(scrapy.Spider):
             nowItem += 1
             yield item
 
-        if self.nowpage < self.totlepage:
-            logging.info("现在爬取第{}页内容".format(self.nowpage + 1))
-            self.nowpage += 1
-            newurl = newbase_url[:newbase_url.index('&')+1] + 'pageNum=' + str(self.nowpage)
+        if (self.nowpage_89 < self.totlepage_89) & ('1559789' in response.url):
+            logging.info("招标公告现在爬取第{}页内容".format(self.nowpage_89 +1))
+            self.nowpage_89 += 1
+            newurl = newbase_url[:newbase_url.index('&')+1] + 'pageNum=' + str(self.nowpage_89)
             #print(newurl)
             yield scrapy.Request(newurl, callback=self.parse)
-
+        if (self.nowpage_90 < self.totlepage_90) & ('1559790' in response.url):
+            logging.info("中标公示现在爬取第{}页内容".format(self.nowpage_90 +1))
+            self.nowpage_90 += 1
+            newurl = newbase_url[:newbase_url.index('&')+1] + 'pageNum=' + str(self.nowpage_90)
+            #print(newurl)
+            yield scrapy.Request(newurl, callback=self.parse)
     def newparse(self, response):
         # print(response.text)
         # 接收上级已爬取的数据
@@ -93,7 +108,7 @@ class AppYcSpider(scrapy.Spider):
         item["noticeContent"] = str(''.join(response.xpath("//div[@id='zoom']//*/text()").extract()).encode(self.newEndcode), 'utf-8')
         item["keywords"] = str(''.join(response.xpath("//div[@id='zoom']//*/text()").extract()).encode(self.newEndcode), 'utf-8')[:100]
         item["noticeTitle"] = str(
-            response.xpath("//div[@class='con']/p/text()").extract_first().encode(self.newEndcode), 'utf-8')
+            ''.join(response.xpath("//div[@class='con']/p[@class='con-title']/text()").extract()).encode(self.newEndcode), 'utf-8')
         #print(item)
         yield item
 

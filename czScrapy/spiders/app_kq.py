@@ -12,17 +12,21 @@ class AppKqSpider(scrapy.Spider):
     logging.info("开始爬取绍兴市柯桥区公共资源交易中心----")
     start_urls = ['http://www.sxxztb.gov.cn/Bulletin/viewmore1.aspx?BulletinTypeId=51&frontid=5&pageindex=1','http://www.sxxztb.gov.cn/Bulletin/viewmore1.aspx?BulletinTypeId=52&frontid=5&pageindex=1']
     base_url ='http://www.sxxztb.gov.cn/Bulletin'
-    totlepage = 1
-    nowpage = 1
+    totlepage_51 = 1
+    nowpage_51 = 1
+    totlepage_52 = 1
+    nowpage_52 = 1
     newEndcode = "utf-8"
-
+    curr_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    newday =''
     def parse(self, response):
         #print(response.status)
-        if self.nowpage% 10 :
-            time.sleep(1)
+        time.sleep(1)
         node_list = response.xpath("//div[@class='roundin']/table[2]//table")
-        if self.nowpage == 1 :
-            self.totlepage = int(response.xpath("//select[@name='fey']/option[last()]/text()").extract()[0].encode(self.newEndcode))
+        if (self.nowpage_51 == 1) & ('51' in response.url):
+            self.totlepage_51 = int(response.xpath("//select[@name='fey']/option[last()]/text()").extract()[0].encode(self.newEndcode))
+        if (self.nowpage_52 == 1) & ('52' in response.url):
+            self.totlepage_52 = int(response.xpath("//select[@name='fey']/option[last()]/text()").extract()[0].encode(self.newEndcode))
         #newbase_url = response.url[:response.url.rfind("/")] + '/'
 
         nowItem = 0
@@ -50,7 +54,7 @@ class AppKqSpider(scrapy.Spider):
             else:
                 item["typeName"] = "成交结果"
             item["url"] = url
-            if self.nowpage == 0 and nowItem == 0:
+            if (self.nowpage_51 == 1 |self.nowpage_52 == 1) and nowItem == 0:
                 logging.info("发送email-------")
                 send_email(receiver=['huxiao_hz@citicbank.com', '16396355@qq.com', '8206741@163.com'],
                            # send_email(receiver=['8206741@163.com'],
@@ -59,11 +63,17 @@ class AppKqSpider(scrapy.Spider):
             nowItem += 1
             yield item
 
-        if self.nowpage < self.totlepage:
-            logging.info("现在爬取第{}页内容".format(self.nowpage + 1))
-            self.nowpage += 1
-            newurl = response.url[:response.url.rfind("=")+1] + str(self.nowpage)
-            print(newurl)
+        if (self.nowpage_51 < self.totlepage_51) & ('51' in response.url):
+            logging.info("交易公告现在爬取第{}页内容".format(self.nowpage_51 + 1))
+            self.nowpage_51 += 1
+            newurl = response.url[:response.url.rfind("=")+1] + str(self.nowpage_51)
+            #print(newurl)
+            yield scrapy.Request(newurl, callback=self.parse)
+        if (self.nowpage_52 < self.totlepage_52) & ('52' in response.url):
+            logging.info("成交结果现在爬取第{}页内容".format(self.nowpage_52 + 1))
+            self.nowpage_52 += 1
+            newurl = response.url[:response.url.rfind("=")+1] + str(self.nowpage_52)
+            #print(newurl)
             yield scrapy.Request(newurl, callback=self.parse)
 
     def newparse(self, response):
@@ -75,7 +85,7 @@ class AppKqSpider(scrapy.Spider):
             response.xpath("// span[@id='lblPublishDate']/text()").extract()[0].encode(self.newEndcode),
             'utf-8').replace("发布时间：", "")
         item["noticePubDate"] = noticePubDate[:noticePubDate.rfind("阅")].strip()
-        print('日期' + item["noticePubDate"])
+        #print('日期' + item["noticePubDate"])
         self.newday = item["noticePubDate"]
 
         item["noticeContent_html"] = str(
