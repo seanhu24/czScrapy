@@ -28,7 +28,7 @@ class AppHzSpider(scrapy.Spider):
     nowpage_146 = 1
     nowpage_149 = 1
     newEndcode = "utf-8"
-    local_path = os.path.abspath('chromedriver.exe')
+    local_path = os.path.abspath('chromedriver')
     curr_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     # print(local_path)
     # 实例化一个浏览器对象
