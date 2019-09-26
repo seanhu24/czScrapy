@@ -79,7 +79,7 @@ class AppYcSpider(scrapy.Spider):
             item["url"] = url
             if (self.nowpage_89 == 1 | self.nowpage_90 == 1) and nowItem == 0:
                 logging.info("发送email-------")
-                send_email(receiver=['huxiao_hz@citicbank.com', '16396355@qq.com', '8206741@163.com'],
+                send_email(receiver=[ '16396355@qq.com', '8206741@163.com'],
                            # send_email(receiver=['8206741@163.com'],
                            title=self.curr_time + '绍兴越城招标网站',
                            cont='<h1>今日爬取地址{}\r\n<br>杭州绍兴越城网站最新更新日期是{}</h1>'.format(response.url + "\r\n", self.newday))
