@@ -78,7 +78,7 @@ class AppYhSpider(scrapy.Spider):
             item["url"] = url
             if (self.nowpage_1532234 == 1 | self.nowpage_1532235 == 1) and nowItem == 0:
                 logging.info("发送email-------")
-                send_email(receiver=['huxiao_hz@citicbank.com', '16396355@qq.com', '8206741@163.com'],
+                send_email(receiver=[ '16396355@qq.com', '8206741@163.com'],
                            # send_email(receiver=['8206741@163.com'],
                            title=self.curr_time + '杭州余杭招标网站',
                            cont='<h1>今日爬取地址{}\r\n<br>杭州余杭招标网站最新更新日期是{}</h1>'.format(response.url + "\r\n", self.newday))

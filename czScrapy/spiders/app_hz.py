@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import os
 import time
+import platform
 #无头浏览器设置
 chorme_options = Options()
 chorme_options.add_argument("--headless")
@@ -20,15 +21,20 @@ chorme_options.add_argument('--blink-settings=imagesEnabled=false')
 class AppHzSpider(scrapy.Spider):
     name = 'app_hz'
     allowed_domains = ['hangzhou.gov.cn']
-    start_urls = ['http://czj.hangzhou.gov.cn/col/col146/index.html?uid=1079&pageNum=1', 'http://czj.hangzhou.gov.cn/col/col149/index.html?uid=1079&pageNum=1']
+    start_urls = ['http://czj.hangzhou.gov.cn/col/col1651779/index.html?uid=4984880&pageNum=1', 'http://czj.hangzhou.gov.cn/col/col1651780/index.html?uid=4984880&pageNum=1']
     base_url = 'http://czj.hangzhou.gov.cn'
     logging.info("开始爬取杭州财政----")
-    totlepage_146 = 1
-    totlepage_149 = 1
-    nowpage_146 = 1
-    nowpage_149 = 1
+    #totlepage_146 = 1
+    #totlepage_149 = 1
+    #nowpage_146 = 1
+    #nowpage_149 = 1
     newEndcode = "utf-8"
-    local_path = os.path.abspath('chromedriver')
+
+    if 'Linux' in platform.system():
+        chromeName = 'chromedriver'
+    else:
+        chromeName = 'chromedriver.exe'
+    local_path = os.path.abspath(chromeName)
     curr_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     # print(local_path)
     # 实例化一个浏览器对象
@@ -42,19 +48,20 @@ class AppHzSpider(scrapy.Spider):
         self.browser.quit()
 
     def parse(self, response):
-        # print(response.text)
-        node_list = response.xpath("//div[@id='1079']/div/table")
-        if (self.nowpage_146== 1) & ('146' in response.url) :
-            self.totlepage_146 = int(
-            response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
-        if (self.nowpage_149== 1 )& ('149' in response.url ):
-            self.totlepage_149 = int(
-            response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
+        #print(response.text)
+        typename = ''
+        node_list = response.xpath("//div[@id='4984880']/div/table/tbody/tr")
+        #if (self.nowpage_146== 1) & ('1651779' in response.url) :
+        #    self.totlepage_146 = int(
+       #     response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
+        #if (self.nowpage_149== 1 )& ('1651780' in response.url ):
+         #   self.totlepage_149 = int(
+       #     response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
         newbase_url = response.url
         nowItem = 0
         for node in node_list:
             item = czScrapyItem()
-            href = str(node.xpath("//td/div[2]/a/@href").extract()[0].encode(self.newEndcode), self.newEndcode)
+            href = str(node.xpath("./td/div[2]/a/@href").extract()[0].encode(self.newEndcode), self.newEndcode)
             item["id"] = href.split('_')[2].split('.')[0]
             item["districtName"] = "杭州市"
             # print(href)
@@ -62,39 +69,35 @@ class AppHzSpider(scrapy.Spider):
             url = self.base_url + href.replace("'", "")
             #print(url)
             yield scrapy.Request(url, meta={'item': item}, callback=self.newparse)
-            item["noticePubDate"] = str(node.xpath("//td[@class='bt_time']/text()").extract()[0].encode(self.newEndcode),
+            item["noticePubDate"] = str(node.xpath("./td[@class='bt_time']/text()").extract()[0].encode(self.newEndcode),
                                         'utf-8').replace('[', '').replace(']', '')
             # item["noticeTitle"] = self.new_item["noticeTitle"]
             self.newday = item["noticePubDate"]
             item["source"] = "杭州财政"
-            item["title"] = str(node.xpath("//td/div[2]/a/@title").extract()[0].encode(self.newEndcode), 'utf-8')
+            item["title"] = str(node.xpath("./td/div[2]/a/@title").extract()[0].encode(self.newEndcode), 'utf-8')
             # print(node.xpath("./td[2]/a[2]/text()").extract()[0].encode(self.newEndcode).decode('utf-8'))
-            if '146' in newbase_url:
+            if '1651779' in newbase_url:
                 item["typeName"] = "招标公告"
             else:
                 item["typeName"] = "中标公告"
+            typename = item["typeName"]
             item["url"] = url
-            if (self.nowpage_146 == 1 | self.nowpage_149 == 1)and nowItem == 0:
+            page_now = int(response.url.split('&')[1].split('=')[1])
+            if (page_now == 1 )and nowItem == 0:
                 logging.info("发送email-------")
-                send_email(receiver=['huxiao_hz@citicbank.com', '16396355@qq.com', '8206741@163.com'],
+                send_email(receiver=[ '16396355@qq.com', '8206741@163.com'],
                            # send_email(receiver=['8206741@163.com'],
                            title=self.curr_time + '杭州财政',
                            cont='<h1>今日爬取地址{}\r\n<br>杭州财政网站最新更新日期是{}</h1>'.format(response.url + "\r\n", self.newday))
             nowItem += 1
             yield item
 
-        if (self.nowpage_146 < self.totlepage_146 ) & ('146' in newbase_url):
-            logging.info("招标公示现在爬取第{}页内容".format(self.nowpage_146 + 1))
-            #print(str(self.nowpage)+'-----'+response.url)
-            self.nowpage_146 += 1
-            newurl = newbase_url[:newbase_url.index('&') + 1] + 'pageNum=' + str(self.nowpage_146)
-            # print(newurl)
-            yield scrapy.Request(newurl, callback=self.parse)
-        if (self.nowpage_149 < self.totlepage_149 ) & ('149' in newbase_url) :
-            logging.info("中标公示现在爬取第{}页内容".format(self.nowpage_149 + 1))
-            #print(str(self.nowpage)+'-----'+response.url)
-            self.nowpage_149 += 1
-            newurl = newbase_url[:newbase_url.index('&') + 1] + 'pageNum=' + str(self.nowpage_149)
+        if response.xpath("//a[@class='default_pgBtn default_pgNext']/@href"):
+            page = int(response.url.split('&')[1].split('=')[1])
+            logging.info(typename + "现在爬取第{}页内容".format(page + 1))
+            # print(str(self.nowpage)+'-----'+response.url)
+            page += 1
+            newurl = newbase_url[:newbase_url.index('&') + 1] + 'pageNum=' + str(page)
             # print(newurl)
             yield scrapy.Request(newurl, callback=self.parse)
 
