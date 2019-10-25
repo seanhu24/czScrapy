@@ -8,7 +8,7 @@ import json
 from scrapy import cmdline
 from czScrapy.mail_utils import *
 from scrapy.selector import Selector
-
+from urllib.parse import urlencode, urlparse, parse_qs
 class AppFySpider(scrapy.Spider):
     name = 'app_fy'
     allowed_domains = ['fuyang.gov.cn','zjzfcg.gov.cn']
