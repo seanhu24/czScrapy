@@ -8,7 +8,7 @@ import json
 from scrapy import cmdline
 from czScrapy.mail_utils import *
 from scrapy.selector import Selector
-
+from urllib.parse import urlencode, urlparse, parse_qs
 class AppFySpider(scrapy.Spider):
     name = 'app_fy'
     allowed_domains = ['fuyang.gov.cn','zjzfcg.gov.cn']
@@ -65,7 +65,12 @@ class AppFySpider(scrapy.Spider):
                 #continue
             elif 'zjzfcg' in href :
                 item["id"] = href[href.index('=')+1:]
-                url ='http://manager.zjzfcg.gov.cn/cms/api/cors/getRemoteResults?noticeId={}&url=http%3A%2F%2Fnotice.zcygov.cn%2Fnew%2FnoticeDetail'.format(item["id"])
+                para = {
+                    'noticeId': item["id"],
+                    # 'url': 'http://notice.zcygov.cn/new/noticeDetail'
+                    'url': 'noticeDetail'
+                }
+                url ='http://manager.zjzfcg.gov.cn/cms/api/cors/remote/results?'+ urlencode(para)
                 yield scrapy.Request(url, meta={'item': item}, callback=self.newparse_zf)
             else:
                 continue
