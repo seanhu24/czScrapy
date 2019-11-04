@@ -23,7 +23,7 @@ class czScrapyPipeline(object):
                 black_key = False
 
         if not white_key or not black_key:
-            logging.info('标题不在白名单或者存在黑名单:%s' % id)
+            logging.info('{}标题不在白名单或者存在黑名单:'.format(item["title"]))
             return
 
             # 检查是否存在重复的通告
