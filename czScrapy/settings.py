@@ -130,7 +130,7 @@ ITEM_PIPELINES = {
 FEED_EXPORT_ENCODING= 'utf-8'
 
 LOG_FILE = "czScrapy.log"
-LOG_LEVEL = "INFO"
+LOG_LEVEL = "WARN"
 
 #遵守robots协议
 ROBOTSTXT_OBEY = False
