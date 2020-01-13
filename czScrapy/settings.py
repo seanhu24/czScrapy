@@ -71,7 +71,7 @@ USER_AGENT =  random.choice(user_agent_list)
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+COOKIES_ENABLED = True
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -130,7 +130,7 @@ ITEM_PIPELINES = {
 FEED_EXPORT_ENCODING= 'utf-8'
 
 LOG_FILE = "czScrapy.log"
-LOG_LEVEL = "INFO"
+LOG_LEVEL = "WARN"
 
 #遵守robots协议
 ROBOTSTXT_OBEY = False
