@@ -93,6 +93,6 @@ XS_MAIN_ZTB_LINK = 'http://www.xszbjyw.com/Module/ModuleView.aspx?ModuleID=4&Vie
 # 萧山招投标管理信息网(爬虫所用地址)
 XS_MAIN_ZTB_LINK_REAL='http://www.xszbjyw.com//web_news/NewFrom.aspx?news_bigclass=6&ViewID=6'
 #开启浏览器渲染
-CONFIG_SITE =['sxyc.gov.cn','yuhang.gov.cn', 'hangzhou.gov.cn', 'ztb.shangyu.gov.cn', 'jiande.gov.cn', 'zhoushan.gov.cn','ajztb.com']
+CONFIG_SITE =['sxyc.gov.cn','yuhang.gov.cn', 'czj.hangzhou.gov.cn', 'ztb.shangyu.gov.cn', 'jiande.gov.cn', 'zhoushan.gov.cn','ajztb.com']
 FIRE_TIME1 = "10:30"
 FIRE_TIME2 = "16:57"
