@@ -3,7 +3,7 @@
 #             '存放备用金', '存放保证金', '存放公积金', '代理银行', '开户银行',
 #             '资金银行', '基本户', '一般户', '账户开户', '基本账户', '一般账户', '银行账户', '开立账户']
 KEYWORDS = ['存款', '公款', '结算账户', '专户', '存放', '代理银行', '开户银行',
-            '资金银行', '基本户', '一般户', '账户开户', '基本账户', '一般账户', '银行账户', '开立账户']
+            '资金银行', '基本户', '一般户', '账户开户', '基本账户', '一般账户', '银行账户', '开立账户','战略合作银行']
 BLACK_LIST = ['反向竞价', '在线询价', '存放室', '存放楼', '存放堂',
               '纪念堂', '存放架', '存放柜', '废旧物资回收', '反向竞价', '骨灰', '公开出租', '银行账户行政许可']
 MONGO_URL = 'localhost:17027'
@@ -93,6 +93,6 @@ XS_MAIN_ZTB_LINK = 'http://www.xszbjyw.com/Module/ModuleView.aspx?ModuleID=4&Vie
 # 萧山招投标管理信息网(爬虫所用地址)
 XS_MAIN_ZTB_LINK_REAL='http://www.xszbjyw.com//web_news/NewFrom.aspx?news_bigclass=6&ViewID=6'
 #开启浏览器渲染
-CONFIG_SITE =['sxyc.gov.cn','yuhang.gov.cn', 'hangzhou.gov.cn', 'ztb.shangyu.gov.cn', 'jiande.gov.cn', 'zhoushan.gov.cn','ajztb.com']
+CONFIG_SITE =['sxyc.gov.cn','yuhang.gov.cn', 'czj.hangzhou.gov.cn', 'ztb.shangyu.gov.cn', 'jiande.gov.cn', 'zhoushan.gov.cn','ajztb.com']
 FIRE_TIME1 = "10:30"
 FIRE_TIME2 = "16:57"
