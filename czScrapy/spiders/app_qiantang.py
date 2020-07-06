@@ -66,7 +66,7 @@ class AppqiantangSpider(scrapy.Spider):
             item["title"] = str(node.xpath("./a/@title").extract()[0].encode(self.newEndcode), 'utf-8')
             # print(node.xpath("./td[2]/a[2]/text()").extract()[0].encode(self.newEndcode).decode('utf-8'))
 
-            item["typeName"] = "公式公告"
+            item["typeName"] = "公示公告"
             typename = item["typeName"]
             item["url"] = url
             page_now = int(response.url.split('&')[1].split('=')[1])
