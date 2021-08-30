@@ -68,7 +68,7 @@ class AppYcSpider(scrapy.Spider):
             # print(url)
 
             item["noticePubDate"] = str(node.xpath("./span/text()").extract()[0].encode(self.newEndcode),
-                                        'utf-8').strip()
+                                        'utf-8').strip().replace("[","").replace("]","")
             # item["noticeTitle"] = self.new_item["noticeTitle"]
             self.newday = item["noticePubDate"]
             item["source"] = "绍兴市越城区"
