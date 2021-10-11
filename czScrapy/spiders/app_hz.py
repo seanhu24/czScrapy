@@ -48,9 +48,9 @@ class AppHzSpider(scrapy.Spider):
         self.browser.quit()
 
     def parse(self, response):
-        #print(response.text)
+        print(response.text)
         typename = ''
-        node_list = response.xpath("//div[@id='4984880']/div/table/tbody/tr")
+        node_list = response.xpath("//div[@class='default_pgContainer']/table/tbody/tr")
         #if (self.nowpage_146== 1) & ('1651779' in response.url) :
         #    self.totlepage_146 = int(
        #     response.xpath("//span[@class='default_pgTotalPage']/text()").extract()[0].encode(self.newEndcode))
@@ -60,22 +60,23 @@ class AppHzSpider(scrapy.Spider):
         newbase_url = response.url
         nowItem = 0
         for node in node_list:
+            #print(111)
             item = czScrapyItem()
             href = str(node.xpath("./td/div[2]/a/@href").extract()[0].encode(self.newEndcode), self.newEndcode)
             item["id"] = href.split('_')[2].split('.')[0]
             item["districtName"] = "杭州市"
-            # print(href)
+            print(href)
 
             url = self.base_url + href.replace("'", "")
             #print(url)
             yield scrapy.Request(url, meta={'item': item}, callback=self.newparse)
-            item["noticePubDate"] = str(node.xpath("./td[@class='bt_time']/text()").extract()[0].encode(self.newEndcode),
+            item["noticePubDate"] = str(node.xpath("./td[2]/text()").extract()[0].encode(self.newEndcode),
                                         'utf-8').replace('[', '').replace(']', '')
             # item["noticeTitle"] = self.new_item["noticeTitle"]
             self.newday = item["noticePubDate"]
             item["source"] = "杭州财政"
             item["title"] = str(node.xpath("./td/div[2]/a/@title").extract()[0].encode(self.newEndcode), 'utf-8')
-            # print(node.xpath("./td[2]/a[2]/text()").extract()[0].encode(self.newEndcode).decode('utf-8'))
+            print(node.xpath("./td/div[2]/a/@title").extract()[0].encode(self.newEndcode).decode('utf-8'))
             if '1651779' in newbase_url:
                 item["typeName"] = "招标公告"
             else:
